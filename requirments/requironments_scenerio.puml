@@ -1,0 +1,73 @@
+@startuml
+
+
+actor "Użytkownik" as User
+box "View" #EAF2FF
+boundary "RequirmentsView" as View
+end box
+
+box "Presenter" #EDE7FF
+boundary "RequirmentsPresenter" as Presenter
+end box
+
+box "API" #FFF2DE
+participant "RequirmentsController" as Controller
+end box
+
+box "Model" #E5F5E9
+boundary "RequirmentsService" as Service
+end box
+
+box "Database" #FFF2DE
+database "RequirmentsRepository" as Repo
+end box
+
+
+User -> View: Open Requirments page
+View -> Presenter: loadRequirments(projectId)
+Presenter -> Controller: GET /api/requirments/{projectId}
+activate Controller
+Controller -> Service: getRequirmentsByProjectId(projectId)
+activate Service
+Service -> Repo: findByProjectId(projectId)
+activate Repo
+Repo --> Service: List<Requirment>
+deactivate Repo
+Service --> Controller: List<Requirment>
+deactivate Service
+Controller --> Presenter: List<Requirment>
+deactivate Controller
+Presenter -> View: showRequirments(requirments)
+
+
+User -> View: Click Add Requirment
+User -> View: Fill in Requirment form
+User -> View: Click Save
+View -> Presenter: addRequirment(requirment)
+activate Presenter
+Presenter -> Controller: POST /api/requirments\nBody: RequirmentDTO (JSON)
+activate Controller
+Presenter -> Controller: validateRequest(dto)
+
+alt Invalid input data
+    Controller --> Presenter: HTTP 400 + ValidationErrorDTO
+    Presenter -> View: showError(message)
+
+else Valid input data
+    Controller -> Service: addRequirment(RequirmentDTO)
+    activate Service
+
+    Service -> Repo: save(requirment)
+    activate Repo
+    Repo --> Service: savedRequirment
+    deactivate Repo
+
+    Service --> Controller: savedRequirment
+    deactivate Service
+    Controller --> Presenter: savedRequirment
+    Presenter -> View: showSuccess(message)
+
+
+
+
+@enduml

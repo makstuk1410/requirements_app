@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: diploma_db
+      POSTGRES_USER: diploma
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U diploma -d diploma_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Diploma.Api/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=diploma_db;Username=diploma;Password=${POSTGRES_PASSWORD}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  migrations:
+    image: mcr.microsoft.com/dotnet/sdk:8.0
+    working_dir: /src
+    volumes:
+      - ./backend:/src
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=diploma_db;Username=diploma;Password=${POSTGRES_PASSWORD}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        dotnet tool install --global dotnet-ef --version 8.0.11 &&
+        export PATH="$$PATH:/root/.dotnet/tools" &&
+        dotnet ef database update \
+          --project Diploma.Database \
+          --startup-project Diploma.Api
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:

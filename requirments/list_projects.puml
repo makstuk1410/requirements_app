@@ -1,0 +1,51 @@
+@startuml
+
+
+actor "Użytkownik" as User
+
+box "View" #EAF2FF
+boundary "ProjectsListView" as View
+end box
+
+box "Presenter" #EDE7FF
+boundary "ProjectsListPresenter" as Presenter
+end box
+
+box "API" #FFF2DE
+participant "ProjectController" as Controller
+end box
+
+box "Model" #E5F5E9
+boundary "ProjectService" as Service
+end box
+
+box "Database" #FFF2DE
+database "ProjectRepository" as Repo
+end box
+
+
+User -> View: Open projects list
+
+View -> Presenter: loadProjects()
+
+activate Presenter
+Presenter -> Controller: GET /api/projects
+
+activate Controller
+Controller -> Service: getAllProjects()
+
+activate Service
+Service -> Repo: findAll()
+
+activate Repo
+Repo --> Service: List<Project>
+deactivate Repo
+Service --> Controller: List<Project>
+deactivate Service
+
+Controller --> Presenter: List<Project>
+deactivate Controller
+Presenter -> View: showProjects(projects)
+
+
+@enduml

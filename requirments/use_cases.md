@@ -120,7 +120,7 @@ Każdy przypadek użycia ma unikalny identyfikator, powiązane wymagania oraz mi
 - **Priorytet:** MVP
 - **Opis:**
 
-### UC-14 — Przeglądaj wymagania
+### UC-14 — Przeglądaj wymagania 
 
 - **Powiązane wymagania:** [FR-034](functional.md#fr-034), [FR-035](functional.md#fr-035)
 - **Priorytet:** MVP

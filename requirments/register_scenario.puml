@@ -1,0 +1,84 @@
+
+@startuml
+title UC: Zarejestruj konto
+
+autonumber
+hide footbox
+
+actor "Użytkownik" as User
+
+box "View" #EAF2FF
+boundary "AuthenticationView" as View
+end box
+
+box "Presenter" #EDE7FF
+control "AuthenticationPresenter" as Presenter
+end box
+
+box "API" #FFF2DE
+participant "AuthController" as Controller
+end box
+
+box "Model" #E5F5E9
+control "AuthService" as Service
+end box
+
+box "Database" #FFF2DE
+database "UserRepository" as Repo
+end box
+
+User -> View: Otwórz formularz rejestracji
+View -> View: showRegistrationForm()
+
+User -> View: Wprowadź email i hasło
+User -> View: Kliknij Zarejestruj
+
+View -> Presenter: register(email, password)
+activate Presenter
+
+Presenter -> Controller: POST /api/auth/register\nBody: RegisterRequestDTO (JSON)
+activate Controller
+
+Controller -> Controller: validateRequest(dto)
+
+alt Niepoprawne dane wejściowe
+    Controller --> Presenter: HTTP 400 + ValidationErrorDTO
+    Presenter -> View: showError(message)
+
+else Poprawne dane
+    Controller -> Service: register(RegisterRequestDTO)
+    activate Service
+
+    Service -> Repo: existsByEmail(email)
+    activate Repo
+    Repo --> Service: true / false
+    deactivate Repo
+
+    alt Email jest już zajęty
+        Service --> Controller: EmailAlreadyExistsError
+        Controller --> Presenter: HTTP 409 + ErrorDTO
+        Presenter -> View: showError(message)
+
+    else Email jest dostępny
+        Service -> Service: hashPassword(password)
+        Service -> Service: createUser(email, passwordHash)
+
+        Service -> Repo: save(user)
+        activate Repo
+        Repo --> Service: savedUser
+        deactivate Repo
+
+        Service --> Controller: RegistrationResult(userId)
+        Controller --> Presenter: HTTP 201 + RegisterResponseDTO
+
+        Presenter -> View: showRegistrationSuccess()
+        Presenter -> View: showLoginForm()
+    end
+
+    deactivate Service
+end
+
+deactivate Controller
+deactivate Presenter
+
+@enduml

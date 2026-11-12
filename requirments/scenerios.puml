@@ -1,0 +1,57 @@
+
+@startuml
+title UC: Zaloguj się
+
+autonumber
+hide footbox
+
+actor "Użytkownik" as User
+boundary "AuthenticationView" as View
+control "AuthenticationPresenter" as Presenter
+participant "AuthController" as Controller
+control "AuthService" as Service
+database "UserRepository" as Repo
+
+User -> View: Wprowadź email i hasło
+User -> View: Kliknij Zaloguj
+
+View -> Presenter: login(email, password)
+activate Presenter
+
+Presenter -> Controller: POST /api/auth/login\nLoginRequestDTO (JSON)
+activate Controller
+
+Controller -> Controller: Walidacja danych wejściowych
+
+alt Niepoprawny format danych
+    Controller --> Presenter: HTTP 400 + ValidationErrorDTO
+    Presenter -> View: showError(message)
+else Poprawny format danych
+    Controller -> Service: authenticate(LoginRequestDTO)
+    activate Service
+
+    Service -> Repo: findByEmail(email)
+    activate Repo
+    Repo --> Service: User / null
+    deactivate Repo
+
+    Service -> Service: verifyPassword(password, passwordHash)
+
+    alt Niepoprawne dane logowania
+        Service --> Controller: AuthenticationError
+        Controller --> Presenter: HTTP 401
+        Presenter -> View: showError(message)
+    else Poprawne dane
+        Service -> Service: generateAccessToken(user)
+        Service --> Controller: AuthResult(token, user)
+        Controller --> Presenter: HTTP 200 + LoginResponseDTO
+        Presenter -> Presenter: updateAuthenticationState()
+        Presenter -> View: showAuthenticationSuccess()
+    end
+
+    deactivate Service
+end
+
+deactivate Controller
+deactivate Presenter
+@enduml

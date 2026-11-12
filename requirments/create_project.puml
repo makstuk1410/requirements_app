@@ -1,0 +1,71 @@
+@startuml
+
+
+actor "Użytkownik" as User
+
+
+box "View" #EAF2FF
+boundary "CreateProjectView" as View
+end box
+
+box "Presenter" #EDE7FF
+boundary "CreateProjectPresenter" as Presenter
+end box
+
+box "API" #FFF2DE
+participant "ProjectController" as Controller
+end box
+
+box "Model" #E5F5E9
+boundary "ProjectService" as Service
+end box
+
+box "Database" #FFF2DE
+database "ProjectRepository" as Repo
+end box
+
+
+User -> View: Open form
+User -> View: Fill in project details
+User -> View: Click Create
+
+View -> Presenter: createProject(name, description)
+
+activate Presenter
+Presenter -> Controller: POST /api/projects\nBody: CreateProjectRequestDTO (JSON)
+activate Controller
+Controller -> Controller: validateRequest(dto)
+
+alt Invalid input data
+    Controller --> Presenter: HTTP 400 + ValidationErrorDTO
+    Presenter -> View: showError(message)
+
+else Valid input data
+    Controller -> Service: createProject(CreateProjectRequestDTO)
+    activate Service
+
+    Service -> Repo: existsByName(name)
+    activate Repo
+    Repo --> Service: true / false
+    deactivate Repo
+
+    alt Project name already exists
+        Service --> Controller: ProjectAlreadyExistsError
+        Controller --> Presenter: HTTP 409 + ErrorDTO
+        Presenter -> View: showError(message)
+
+    else Project name is available
+        Service -> Repo: save(project)
+        activate Repo
+        Repo --> Service: savedProject
+        deactivate Repo
+
+        Service --> Controller: ProjectCreatedResponseDTO
+        Controller --> Presenter: HTTP 201 + ProjectCreatedResponseDTO
+        Presenter -> View: showSuccess(savedProject)
+    end
+
+    deactivate Service
+end
+
+@enduml

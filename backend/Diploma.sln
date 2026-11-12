@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Api", "Diploma.Api\Diploma.Api.csproj", "{FD1C015B-95F5-46A6-801B-588F93E06167}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Model", "Diploma.Model\Diploma.Model.csproj", "{FE5EE626-6D1E-4A01-B085-B6292B29BE18}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diploma.Database", "Diploma.Database\Diploma.Database.csproj", "{86E51263-BE91-4738-87C6-92990CF37061}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FD1C015B-95F5-46A6-801B-588F93E06167}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD1C015B-95F5-46A6-801B-588F93E06167}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD1C015B-95F5-46A6-801B-588F93E06167}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD1C015B-95F5-46A6-801B-588F93E06167}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE5EE626-6D1E-4A01-B085-B6292B29BE18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE5EE626-6D1E-4A01-B085-B6292B29BE18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE5EE626-6D1E-4A01-B085-B6292B29BE18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE5EE626-6D1E-4A01-B085-B6292B29BE18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86E51263-BE91-4738-87C6-92990CF37061}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86E51263-BE91-4738-87C6-92990CF37061}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86E51263-BE91-4738-87C6-92990CF37061}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86E51263-BE91-4738-87C6-92990CF37061}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
